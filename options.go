@@ -11,6 +11,7 @@ import (
 	"path"
 	"regexp"
 	"sort"
+	"strings"
 )
 
 // Byte unit helpers.
@@ -191,12 +192,12 @@ func DirListRich(options DirListRichOptions) DirListFunc {
 
 		sortBy := r.URL.Query().Get("sort")
 		switch sortBy {
-		case "name":
-			sort.Slice(dirs, func(i, j int) bool { return dirs[i].Name() < dirs[j].Name() })
 		case "size":
 			sort.Slice(dirs, func(i, j int) bool { return dirs[i].Size() < dirs[j].Size() })
-		default:
+		case "modified":
 			sort.Slice(dirs, func(i, j int) bool { return dirs[i].ModTime().After(dirs[j].ModTime()) })
+		default:
+			sort.Slice(dirs, func(i, j int) bool { return strings.ToLower(dirs[i].Name()) < strings.ToLower(dirs[j].Name()) })
 		}
 
 		title := options.Title
